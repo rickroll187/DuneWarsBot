@@ -4,7 +4,7 @@ Dynamic partial repairs and human-like skipping!
 """
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
 from config import ENABLE_REPAIR, REPAIR_RANDOMIZE, REPAIR_CRITICAL_THRESHOLD, REPAIR_SKIP_PROBABILITY, log
