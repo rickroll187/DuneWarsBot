@@ -1,8 +1,9 @@
 import streamlit as st
 from config import SETTINGS, log
-from modules import bank, combat, train, repair, upgrade, research, spy, anti_covert
+from modules import bank, combat, train, repair, upgrade, research, spy, anti_covert, enemy_stats
 import threading
 import time
+import logging
 
 DASH_LOG = []
 
@@ -33,10 +34,17 @@ SETTINGS["UPGRADE_SPICE_THRESHOLD"] = st.sidebar.slider("Upgrade Spice Threshold
 SETTINGS["AUTO_RESEARCH"] = st.sidebar.toggle("Auto Research", SETTINGS["AUTO_RESEARCH"])
 SETTINGS["AUTO_SPY"] = st.sidebar.toggle("Auto Spy Network", SETTINGS["AUTO_SPY"])
 SETTINGS["SPY_COUNT"] = st.sidebar.slider("Number of Spies", 1, 20, SETTINGS["SPY_COUNT"])
-SETTINGS["SPY_MISSION"] = st.sidebar.selectbox("Spy Mission", ["scout", "sabotage", "intel"], index=["scout", "sabotage", "intel"].index(SETTINGS["SPY_MISSION"]))
+SETTINGS["SPY_MISSION"] = st.sidebar.selectbox(
+    "Spy Mission", ["scout", "sabotage", "intel"],
+    index=["scout", "sabotage", "intel"].index(SETTINGS["SPY_MISSION"])
+)
 SETTINGS["AUTO_ANTICOVERT"] = st.sidebar.toggle("Auto Anti-Covert Ops", SETTINGS["AUTO_ANTICOVERT"])
 SETTINGS["ANTICOVERT_SCAN_COUNT"] = st.sidebar.slider("Anti-Covert Scan Count", 1, 10, SETTINGS["ANTICOVERT_SCAN_COUNT"])
-SETTINGS["ANTICOVERT_STRATEGY"] = st.sidebar.selectbox("Anti-Covert Strategy", ["scan", "trap", "counter-intel"], index=["scan", "trap", "counter-intel"].index(SETTINGS["ANTICOVERT_STRATEGY"]))
+SETTINGS["ANTICOVERT_STRATEGY"] = st.sidebar.selectbox(
+    "Anti-Covert Strategy", ["scan", "trap", "counter-intel"],
+    index=["scan", "trap", "counter-intel"].index(SETTINGS["ANTICOVERT_STRATEGY"])
+)
+SETTINGS["SHOW_ENEMY_STATS"] = st.sidebar.toggle("Show Enemy Stats", SETTINGS["SHOW_ENEMY_STATS"])
 
 def bot_loop():
     while st.session_state["run_bot"]:
@@ -48,6 +56,7 @@ def bot_loop():
         research.run(None)
         spy.run(None, SETTINGS["SPY_COUNT"], SETTINGS["SPY_MISSION"])
         anti_covert.run(None, SETTINGS["ANTICOVERT_SCAN_COUNT"], SETTINGS["ANTICOVERT_STRATEGY"])
+        enemy_stats.log_enemy_stats()
         time.sleep(2)
 
 if "run_bot" not in st.session_state:
@@ -67,5 +76,12 @@ if st.button("Stop Bot", disabled=not st.session_state["run_bot"]):
 st.subheader("Bot Activity Log (Real Time)")
 for msg in DASH_LOG[-40:]:
     st.write(msg)
+
+if SETTINGS.get("SHOW_ENEMY_STATS", True):
+    st.subheader("Enemy Stats (Live)")
+    for enemy in enemy_stats.get_enemy_stats():
+        st.write(
+            f"**{enemy['name']}** | Army: {enemy['army']} | Defense: {enemy['defense']} | Spice: {enemy['spice']} | Spies: {enemy['spies']}"
+        )
 
 st.caption("Code Bros: The dashboard so cool, even enemy spies want to watch.")
