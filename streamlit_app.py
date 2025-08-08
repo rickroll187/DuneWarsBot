@@ -1,83 +1,57 @@
 import streamlit as st
-from config import SETTINGS, log
+
+# Import your modules
 from modules import (
-    bank, combat, train, repair, upgrade, research, spy, anti_covert,
-    enemy_stats, battle_reports, custom_actions, resource_management,
-    enemy_watchlist, stats_graphs
+    bank,
+    combat,
+    train,
+    repair,
+    upgrade,
+    research,
+    # spy,         # Uncomment when spy.py is ready!
+    anti_covert
 )
-import threading
-import time
-import logging
 
-DASH_LOG = []
+st.set_page_config(page_title="DuneWarsBot", layout="wide")
+st.title("💣 DuneWarsBot — Code Bros Edition")
 
-class StreamlitLogHandler(logging.Handler):
-    def emit(self, record):
-        msg = self.format(record)
-        DASH_LOG.append(msg)
-        if len(DASH_LOG) > SETTINGS["MAX_LOG_LINES"]:
-            DASH_LOG.pop(0)
+# Example: Use functions from your modules
+st.header("Bank Status")
+if hasattr(bank, "get_bank_status"):
+    st.write(bank.get_bank_status())
+else:
+    st.info("Bank module loaded, but no get_bank_status() found.")
 
-log.handlers = []
-log.addHandler(StreamlitLogHandler())
+st.header("Combat Zone")
+if hasattr(combat, "get_combat_report"):
+    st.write(combat.get_combat_report())
+else:
+    st.info("Combat module loaded, but no get_combat_report() found.")
 
-st.title("Code Bros DuneWarsBot Monster Edition 💪😎")
+st.header("Training Grounds")
+if hasattr(train, "train_units"):
+    st.write(train.train_units())
+else:
+    st.info("Train module loaded, but no train_units() found.")
 
-st.sidebar.header("Code Bros Bot Controls")
+# Continue adding sections for other modules...
 
-# == Feature Toggles ==
-SETTINGS["AUTO_FARM"] = st.sidebar.toggle("Auto Farm", SETTINGS["AUTO_FARM"])
-SETTINGS["AUTO_RAID"] = st.sidebar.toggle("Auto Raid", SETTINGS["AUTO_RAID"])
-SETTINGS["AUTO_TRAIN"] = st.sidebar.toggle("Auto Train", SETTINGS["AUTO_TRAIN"])
-SETTINGS["AUTO_REPAIR"] = st.sidebar.toggle("Auto Repair Mothership", SETTINGS["AUTO_REPAIR"])
-SETTINGS["AUTO_UPGRADE"] = st.sidebar.toggle("Auto Upgrade", SETTINGS["AUTO_UPGRADE"])
-SETTINGS["AUTO_RESEARCH"] = st.sidebar.toggle("Auto Research", SETTINGS["AUTO_RESEARCH"])
-SETTINGS["AUTO_SPY"] = st.sidebar.toggle("Auto Spy Network", SETTINGS["AUTO_SPY"])
-SETTINGS["AUTO_ANTICOVERT"] = st.sidebar.toggle("Auto Anti-Covert Ops", SETTINGS["AUTO_ANTICOVERT"])
+# Uncomment this when spy.py is working!
+# st.header("Spy Network")
+# if hasattr(spy, "get_spy_log"):
+#     st.write(spy.get_spy_log())
+# else:
+#     st.info("Spy module loaded, but no get_spy_log() found.")
 
-SETTINGS["REPAIR_AMOUNT"] = st.sidebar.slider("Repair Amount", 100, 5000, SETTINGS["REPAIR_AMOUNT"], step=100)
+st.header("Anti-Covert Ops")
+if hasattr(anti_covert, "scan_for_intruders"):
+    st.write(anti_covert.scan_for_intruders())
+else:
+    st.info("Anti-Covert module loaded, but no scan_for_intruders() found.")
 
-# == ALL IN Mode ==
-if st.sidebar.button("Go ALL IN Code Bros Mode"):
-    for key in SETTINGS:
-        if key.startswith("AUTO_"):
-            SETTINGS[key] = True
-    st.success("ALL IN mode activated! Every feature firing. 💪")
+st.markdown("---")
+st.caption("🦾 Code Bros: We code the spice, we crack the jokes. If you hit an error, drop it here and we'll roast it!")
 
-macro_actions = st.sidebar.text_input("Custom Macro (comma separated)", value="raid,spy,upgrade")
-macro_list = [a.strip() for a in macro_actions.split(",") if a.strip()]
-if st.sidebar.button("Run Macro"):
-    custom_actions.run_macro(macro_list)
-
-def bot_loop():
-    while st.session_state["run_bot"]:
-        bank.run(None, SETTINGS.get("FARM_AMOUNT", 10000))
-        combat.run(None, SETTINGS.get("RAID_AMOUNT", 5000), SETTINGS.get("RAID_MAX_TARGETS", 3))
-        train.run(None, SETTINGS.get("TRAIN_AMOUNT", 20))
-        repair.run(None, SETTINGS.get("REPAIR_AMOUNT", 500))
-        upgrade.run(None, SETTINGS.get("UPGRADE_SPICE_THRESHOLD", 10000))
-        research.run(None)
-        spy.run(None, SETTINGS.get("SPY_COUNT", 5), SETTINGS.get("SPY_MISSION", "intel"))
-        anti_covert.run(None, SETTINGS.get("ANTICOVERT_SCAN_COUNT", 3), SETTINGS.get("ANTICOVERT_STRATEGY", "scan"))
-        enemy_stats.log_enemy_stats()
-        time.sleep(2)
-
-if "run_bot" not in st.session_state:
-    st.session_state["run_bot"] = False
-    st.session_state["bot_thread"] = None
-
-if st.button("Start Code Bros Bot", disabled=st.session_state["run_bot"]):
-    st.session_state["run_bot"] = True
-    st.session_state["bot_thread"] = threading.Thread(target=bot_loop, daemon=True)
-    st.session_state["bot_thread"].start()
-    st.success("Bot started! Watch it work below.")
-
-if st.button("Stop Bot", disabled=not st.session_state["run_bot"]):
-    st.session_state["run_bot"] = False
-    st.success("Bot stopped!")
-
-st.subheader("Bot Activity Log (Real Time)")
-for msg in DASH_LOG[-40:]:
-    st.write(msg)
-
-st.caption("Code Bros: Domination, one toggle at a time. Turn it off if you want scars, bro! 😎")
+# 🦾 Joke of the day:
+st.sidebar.title("Code Bros Joke")
+st.sidebar.markdown("> Why do Code Bros love Streamlit?\n> Because launching a bot should be as easy as flexing your biceps, bro! 😎")
