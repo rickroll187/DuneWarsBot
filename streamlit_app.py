@@ -1,6 +1,12 @@
 import streamlit as st
 from config import SETTINGS, log
-from modules import bank, combat, train, repair, upgrade, research, spy, anti_covert, enemy_stats
+from modules import (
+    bank, combat, train, repair, upgrade, research, spy, anti_covert,
+    enemy_stats, battle_reports, custom_actions, resource_management,
+    enemy_watchlist, stats_graphs,
+    battle_automation, defense_planning, enemy_analysis, adaptive_ai,
+    backups, advanced_visualization, historical_analysis
+)
 import threading
 import time
 import logging
@@ -19,6 +25,7 @@ log.addHandler(StreamlitLogHandler())
 
 st.title("Code Bros DuneWarsBot Monster Edition 💪😎")
 
+# == SIDEBAR CONTROLS ==
 st.sidebar.header("Code Bros Bot Controls")
 SETTINGS["AUTO_FARM"] = st.sidebar.toggle("Auto Farm", SETTINGS["AUTO_FARM"])
 SETTINGS["FARM_AMOUNT"] = st.sidebar.slider("Farm Amount", 1000, 50000, SETTINGS["FARM_AMOUNT"], step=1000)
@@ -46,6 +53,17 @@ SETTINGS["ANTICOVERT_STRATEGY"] = st.sidebar.selectbox(
 )
 SETTINGS["SHOW_ENEMY_STATS"] = st.sidebar.toggle("Show Enemy Stats", SETTINGS["SHOW_ENEMY_STATS"])
 
+macro_actions = st.sidebar.text_input("Custom Macro (comma separated)", value="raid,spy,upgrade")
+macro_list = [a.strip() for a in macro_actions.split(",") if a.strip()]
+if st.sidebar.button("Run Macro"):
+    custom_actions.run_macro(macro_list)
+
+if st.sidebar.button("Backup Settings"):
+    backups.backup_settings()
+if st.sidebar.button("Restore Settings"):
+    backups.restore_settings()
+
+# == MAIN LOOP ==
 def bot_loop():
     while st.session_state["run_bot"]:
         bank.run(None, SETTINGS["FARM_AMOUNT"])
@@ -57,6 +75,25 @@ def bot_loop():
         spy.run(None, SETTINGS["SPY_COUNT"], SETTINGS["SPY_MISSION"])
         anti_covert.run(None, SETTINGS["ANTICOVERT_SCAN_COUNT"], SETTINGS["ANTICOVERT_STRATEGY"])
         enemy_stats.log_enemy_stats()
+        # Battle Automation
+        result = battle_automation.auto_battle(SETTINGS["ENEMY_LIST"][0])
+        battle_reports.log_battle_result("battle", result["enemy"], result["outcome"], loot=result["loot"])
+        # Defense Planning
+        defense_planning.plan_defense()
+        # Advanced Enemy Analysis
+        analysis = enemy_analysis.analyze_enemies()
+        # Adaptive AI
+        adaptive_ai.adapt_strategy()
+        # Resource Management
+        resource_management.auto_bank_or_spend(25000)
+        # Enemy Watchlist Alerts
+        enemy_watchlist.alert_if_enemy_changes(enemy_stats.get_enemy_stats())
+        # Stats Graphs
+        stats_graphs.record_stats("Spice", SETTINGS["FARM_AMOUNT"])
+        # Advanced Visualization
+        # (called in UI below)
+        # Historical Analysis
+        # (called in UI below)
         time.sleep(2)
 
 if "run_bot" not in st.session_state:
@@ -77,6 +114,13 @@ st.subheader("Bot Activity Log (Real Time)")
 for msg in DASH_LOG[-40:]:
     st.write(msg)
 
+if SETTINGS.get("ENABLE_BATTLE_REPORTS", True):
+    st.subheader("Battle Reports (Last 10)")
+    for report in battle_reports.get_latest_reports(10):
+        st.write(
+            f"[{report['type'].title()}] vs {report.get('opponent', report.get('target', ''))}: {report['outcome']} | Loot: {report.get('loot', '')} | {report.get('details', '')}"
+        )
+
 if SETTINGS.get("SHOW_ENEMY_STATS", True):
     st.subheader("Enemy Stats (Live)")
     for enemy in enemy_stats.get_enemy_stats():
@@ -84,4 +128,10 @@ if SETTINGS.get("SHOW_ENEMY_STATS", True):
             f"**{enemy['name']}** | Army: {enemy['army']} | Defense: {enemy['defense']} | Spice: {enemy['spice']} | Spies: {enemy['spies']}"
         )
 
+stats_graphs.show_stats_graph()
+advanced_visualization.show_multi_stat_dashboard()
+historical_analysis.show_historical_stats()
+
 st.caption("Code Bros: The dashboard so cool, even enemy spies want to watch.")
+
+st.info("Why do Code Bros add every function? Because domination is a team sport, and our team is undefeated! 😎")
