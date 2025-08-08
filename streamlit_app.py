@@ -57,6 +57,7 @@ st.header("Custom Actions")
 st.info(custom_actions.get_actions() if hasattr(custom_actions, "get_actions") else "Custom actions module loaded. Functionality coming soon!")
 
 st.header("Resource Management")
+# HERE is the bit with get_resources() as you wanted!
 st.info(resource_management.get_resources() if hasattr(resource_management, "get_resources") else "Resource management module loaded. Functionality coming soon!")
 
 st.header("Enemy Watchlist")
