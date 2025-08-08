@@ -37,4 +37,8 @@ def clear_spy_log():
 
 # 🦾 Code Bros Joke:
 # Why did the spy go to the desert?
+<<<<<<< HEAD
 # To keep an eye on the sand... but he lost track after the 10th grain, bro! 😎
+=======
+# To keep an eye on the sand... but he lost track after the 10th grain, bro! 😎
+>>>>>>> 9dbbc3d6b3088efb8f66c20d28f89c621cf8d14c

@@ -12,6 +12,10 @@ from modules import (
     enemy_stats,
     codebros_battlelogs,   # <-- updated import name!
     custom_actions,
+<<<<<<< HEAD
+=======
+    resource_management,
+>>>>>>> 9dbbc3d6b3088efb8f66c20d28f89c621cf8d14c
     enemy_watchlist,
     stats_graphs
 )
@@ -56,6 +60,10 @@ st.header("Custom Actions")
 st.info(custom_actions.get_actions() if hasattr(custom_actions, "get_actions") else "Custom actions module loaded. Functionality coming soon!")
 
 st.header("Resource Management")
+<<<<<<< HEAD
+=======
+# HERE is the bit with get_resources() as you wanted!
+>>>>>>> 9dbbc3d6b3088efb8f66c20d28f89c621cf8d14c
 st.info(resource_management.get_resources() if hasattr(resource_management, "get_resources") else "Resource management module loaded. Functionality coming soon!")
 
 st.header("Enemy Watchlist")
@@ -69,4 +77,8 @@ st.caption("🦾 Code Bros: We code the spice, we crack the jokes. If you hit an
 
 # Joke of the day:
 st.sidebar.title("Code Bros Joke")
+<<<<<<< HEAD
 st.sidebar.markdown("> Why do Code Bros love Streamlit?\n> Because launching a bot should be as easy as flexing your biceps, bro! 😎")
+=======
+st.sidebar.markdown("> Why do Code Bros love Streamlit?\n> Because launching a bot should be as easy as flexing your biceps, bro! 😎")
+>>>>>>> 9dbbc3d6b3088efb8f66c20d28f89c621cf8d14c

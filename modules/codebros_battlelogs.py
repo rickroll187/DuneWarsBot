@@ -36,4 +36,8 @@ def clear_battle_log():
     _battle_log.clear()
 
 # 🦾 Code Bros Joke:
+<<<<<<< HEAD
 # Why did the battle log take a nap? Because it was tired of tracking all those epic wins, bro! 😎
+=======
+# Why did the battle log take a nap? Because it was tired of tracking all those epic wins, bro! 😎
+>>>>>>> 9dbbc3d6b3088efb8f66c20d28f89c621cf8d14c
