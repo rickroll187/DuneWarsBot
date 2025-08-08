@@ -10,42 +10,55 @@ if not log.handlers:
     ch.setFormatter(formatter)
     log.addHandler(ch)
 
-# === Default Settings (UI can override these) ===
+# === MONSTER BOT SETTINGS ===
 SETTINGS = {
     # General
     "BROWSER": "chrome",
     "LOGIN_URL": "https://dunewars.net/login",
     "DASHBOARD_URL": "https://dunewars.net/base",
 
-    # Farming
+    # === Farming ===
     "AUTO_FARM": True,
     "FARM_AMOUNT": 10000,
 
-    # Raiding
+    # === Raiding ===
     "AUTO_RAID": True,
     "RAID_AMOUNT": 5000,
     "RAID_MAX_TARGETS": 3,
     "RAID_BLACKLIST_DURATION": 300,
 
-    # Training
+    # === Training ===
     "AUTO_TRAIN": True,
     "TRAIN_AMOUNT": 20,
 
-    # Weapons Repair
+    # === Repairing ===
     "AUTO_REPAIR": True,
     "REPAIR_AMOUNT": 500,
 
-    # Upgrading
+    # === Upgrading ===
     "AUTO_UPGRADE": True,
     "UPGRADE_SPICE_THRESHOLD": 10000,
     "UPGRADE_PRIORITY": ["defense", "economy", "infrastructure"],
 
-    # Research
+    # === Research ===
     "AUTO_RESEARCH": True,
     "RESEARCH_PRIORITY": ["military", "economy", "infrastructure"],
 
-    # Anti-detection
+    # === Spy Network ===
+    "AUTO_SPY": True,
+    "SPY_COUNT": 5,
+    "SPY_MISSION": "intel",  # options: 'scout', 'sabotage', 'intel'
+
+    # === Anti-Covert Ops ===
+    "AUTO_ANTICOVERT": True,
+    "ANTICOVERT_SCAN_COUNT": 3,
+    "ANTICOVERT_STRATEGY": "scan",  # options: 'scan', 'trap', 'counter-intel'
+
+    # === Anti-detection ===
     "RANDOM_ACTION_ORDER": True,
     "ACTION_DELAY_RANGE": (1.0, 3.0),
     "SKIP_ACTION_PROBABILITY": 0.15,
+
+    # === Dashboard/Runtime ===
+    "MAX_LOG_LINES": 100,
 }
