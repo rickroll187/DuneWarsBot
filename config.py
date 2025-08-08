@@ -3,7 +3,7 @@ BROWSER = "chrome"
 LOGIN_URL = "https://dunewars.net/login"
 DASHBOARD_URL = "https://dunewars.net/base"
 
-# === RAID Settings ===
+# === RAID SETTINGS ===
 ENABLE_RAID = True
 RAID_MAX_TARGETS = 3
 RAID_BLACKLIST_DURATION = 300  # seconds
