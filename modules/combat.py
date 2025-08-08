@@ -2,6 +2,9 @@
 Combat & Raiding - Code Bros
 Smart target selection, blacklist, and spicy raid execution!
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
 from config import ENABLE_RAID, RAID_MAX_TARGETS, RAID_BLACKLIST_DURATION, log
