@@ -2,6 +2,9 @@
 Research Module - Code Bros
 Because knowledge is power (and sometimes, more spice).
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
 from config import ENABLE_AUTO_RESEARCH, RESEARCH_PRIORITY, log
