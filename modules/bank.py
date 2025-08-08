@@ -2,6 +2,9 @@
 Banking Module - Code Bros
 Protects your spice like it's grandma's secret cookie recipe.
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
 from config import ENABLE_BANKING, BANK_MIN_BUFFER, BANK_SKIP_PROBABILITY, log
