@@ -8,15 +8,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import random
 import time
 from config import ENABLE_RAID, RAID_MAX_TARGETS, RAID_BLACKLIST_DURATION, log
-from anti_detection import should_skip_action
+from modules.anti_detection import should_skip_action
 
-# In-memory session blacklist (reset each run)
+# In-memory session blacklist
 target_blacklist = {}
 
 def fetch_targets(session):
-    # TODO: Implement actual target scraping based on your game's HTML/API
-    # This is a placeholder for demonstration.
-    # Should return a list of dicts: [{'id': ..., 'army': ..., 'spice': ...}, ...]
+    # TODO: Replace with actual target scraping
     log("Fetching raid targets (placeholder)...")
     return [
         {'id': '123', 'army': 300, 'spice': 5000},
@@ -25,9 +23,8 @@ def fetch_targets(session):
     ]
 
 def raid_target(session, target):
-    # TODO: Implement the actual raid POST request.
+    # TODO: Replace with actual raid POST request
     log(f"Raiding target {target['id']} with {target['spice']} spice.")
-    # Simulate success/failure
     success = random.random() > 0.25
     if not success:
         log(f"Raid on {target['id']} failed! Adding to blacklist.")
@@ -35,7 +32,6 @@ def raid_target(session, target):
     return success
 
 def update_blacklist():
-    # Decrement blacklist timers and remove expired
     for t in list(target_blacklist.keys()):
         target_blacklist[t] -= 1
         if target_blacklist[t] <= 0:
@@ -48,7 +44,6 @@ def run(session):
     log("Starting raid sequence!")
     update_blacklist()
     targets = fetch_targets(session)
-    # Sort by most spice, filter blacklisted
     targets = [t for t in sorted(targets, key=lambda x: -x['spice']) if t['id'] not in target_blacklist]
     targets = targets[:RAID_MAX_TARGETS]
     for target in targets:
