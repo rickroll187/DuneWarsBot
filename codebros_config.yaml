@@ -1,0 +1,11 @@
+# CODE BROS BOT CONFIG
+mode: farming                  # Options: farming, raiding, fighting, defending
+spice_buffer: 10000000         # Minimum spice to keep unbanked
+bank_paranoia: 0.8             # 0.0 = Never bank, 1.0 = Always bank
+defense_threshold: 50000000    # If incoming attack > this, trigger extra defense
+revenge_mode: true             # If attacked by onliner, counterattack?
+max_train_per_cycle: 100       # Max units to train per cycle
+stealth: true                  # Enable anti-detection
+error_retries: 3               # How many times to retry failed actions
+log_file: codebros_log.txt     # Log file path
+dashboard: true                # Enable live dashboard (step 5)
