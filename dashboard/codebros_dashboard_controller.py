@@ -6,9 +6,9 @@ from modules.ai_strategy import load_data, train_ai, predict_ai
 from modules.data_logger import log_gameplay
 import numpy as np
 
-st.set_page_config(page_title="Code Bros AI Dashboard 🤖🌶️", layout="centered")
-st.title("Code Bros AI Dashboard: Ultimate Edition 🤖🌶️")
-st.write("Attack, defend, farm, raid, automate, and analyze—Code Bros style!")
+st.set_page_config(page_title="Code Bros AI Dashboard: Self-Defense Edition 🤖🛡️", layout="centered")
+st.title("Code Bros AI Dashboard: Self-Defense, Farm, Raid, Auto & Resource Management 🤖🌶️")
+st.write("Attack, defend, farm, raid, automate, manage resources, and analyze—Code Bros style!")
 
 # --- Logging Section ---
 st.header("Log New Game & Retrain")
@@ -33,6 +33,11 @@ auto_buy_weapons = st.checkbox("Auto-Buy Weapons")
 auto_repair = st.checkbox("Auto-Repair")
 mothership = st.checkbox("Mothership Mode (Big Move)")
 
+# --- Resources and Attack State ---
+st.subheader("Resource & Threat State")
+current_resources = st.number_input("Current Resources", min_value=0, value=100)
+under_attack_count = st.number_input("Times Attacked in a Row", min_value=0, value=0)
+
 features = [
     mode, current_spice, enemy_strength, my_defense,
     int(farm_mode == "Raid"),
@@ -40,7 +45,9 @@ features = [
     int(auto_train),
     int(auto_buy_weapons),
     int(auto_repair),
-    int(mothership)
+    int(mothership),
+    current_resources,
+    under_attack_count
 ]
 
 result = st.selectbox("Result", [1, 0], format_func=lambda x: "Win" if x == 1 else "Loss")
@@ -50,14 +57,14 @@ if st.button("Log Game & Retrain"):
     X, y = load_data()
     if len(X) > 5:
         train_ai(X, y)
-        st.success("Game logged and AI retrained, bro! Ready for farm, raid, or full-scale war!")
+        st.success("Game logged and AI retrained, bro! Ready for farm, raid, self-defense, and full-scale war!")
     elif len(X) > 0:
         st.info("Game logged, but you'll need more data for spicy predictions, bro!")
     else:
         st.error("No data yet, bro! Play some games first!")
 
 # --- Prediction Section ---
-st.header("Test AI Prediction (Attack/Defend/Farm/Raid/etc.)")
+st.header("Test AI Prediction (Attack/Defend/Farm/Raid/Auto/Defense)")
 
 test_mode = st.selectbox("Test Mode", [1, 0], format_func=lambda x: mode_map[x], key="test_mode")
 test_col1, test_col2, test_col3 = st.columns(3)
@@ -74,6 +81,8 @@ test_auto_train = st.checkbox("Test: Auto-Train", key="test_auto_train")
 test_auto_buy_weapons = st.checkbox("Test: Auto-Buy Weapons", key="test_auto_buy_weapons")
 test_auto_repair = st.checkbox("Test: Auto-Repair", key="test_auto_repair")
 test_mothership = st.checkbox("Test: Mothership Mode", key="test_mothership")
+test_current_resources = st.number_input("Test: Current Resources", min_value=0, value=100, key="test_resources")
+test_under_attack_count = st.number_input("Test: Times Attacked in a Row", min_value=0, value=0, key="test_attacked")
 
 test_features = [
     test_mode, test_current_spice, test_enemy_strength, test_my_defense,
@@ -82,7 +91,9 @@ test_features = [
     int(test_auto_train),
     int(test_auto_buy_weapons),
     int(test_auto_repair),
-    int(test_mothership)
+    int(test_mothership),
+    test_current_resources,
+    test_under_attack_count
 ]
 
 if st.button("Run AI Prediction"):
@@ -93,7 +104,8 @@ if st.button("Run AI Prediction"):
     st.write(
         f"AI says: **{'Go for ' + action.upper() + '!' if pred else 'Do NOT ' + action.upper() + ' now.'}** "
         f"(mode: {action}, {farm_raid}, {war}, auto_train={test_auto_train}, "
-        f"auto_buy_weapons={test_auto_buy_weapons}, auto_repair={test_auto_repair}, mothership={test_mothership})"
+        f"auto_buy_weapons={test_auto_buy_weapons}, auto_repair={test_auto_repair}, mothership={test_mothership}, "
+        f"resources={test_current_resources}, under_attack_count={test_under_attack_count})"
     )
 
 # --- Analytics Section ---
@@ -118,6 +130,8 @@ if len(X) > 0:
             "Auto-Buy": [label_bool(row[7], 7) for row in X[-10:]],
             "Auto-Repair": [label_bool(row[8], 8) for row in X[-10:]],
             "Mothership": [label_bool(row[9], 9, "🛸", "—") for row in X[-10:]],
+            "Resources": [row[10] for row in X[-10:]],
+            "Attacked xN": [row[11] for row in X[-10:]],
             "Result": ["Win" if r == 1 else "Loss" for r in y[-10:]],
         }
     )
@@ -144,8 +158,15 @@ if len(X) > 0:
         if total > 0:
             win_rate = np.mean(arrY[idx])
             st.metric(f"{label} win rate", f"{100*win_rate:.1f}%", f"over {total} games")
+    # Analytics for self-defense: attacked multiple times
+    for threat in [0, 1, 2, 3, 4, 5]:
+        idx = arrX[:, 11] == threat
+        total = np.sum(idx)
+        if total > 0:
+            win_rate = np.mean(arrY[idx])
+            st.metric(f"Win rate when attacked x{threat}", f"{100*win_rate:.1f}%", f"{total} games")
 else:
     st.info("No gameplay data yet. Log some games to see analytics!")
 
 st.markdown("---")
-st.caption("Now with farming, raiding, war mode, auto-training, auto-buying, repairs, and mothership! Code Bros go full galaxy brain 🚀🛸")
+st.caption("Now with farming, raiding, war mode, auto-training, resource management, and tactical defense! Code Bros: we never run out of spice or jokes! 🌶️🛡️")
