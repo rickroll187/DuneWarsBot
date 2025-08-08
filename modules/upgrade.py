@@ -2,6 +2,9 @@
 Upgrade Module - Code Bros
 Spending spice on upgrades—'cause you can't take it with you!
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
 from config import ENABLE_AUTO_UPGRADE, UPGRADE_PRIORITY, UPGRADE_SPICE_THRESHOLD, log
