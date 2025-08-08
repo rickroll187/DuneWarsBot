@@ -84,15 +84,39 @@ SETTINGS = {
     "STATS_HISTORY": [],
 
     # == Raid for Untrained Troops ==
-    "RAID_MIN_ARMY_SIZE": 12869559,
-    "RAID_MIN_UNTRAINED_TROOPS": 50000,  # Adjustable for monster mode
+    "RAID_MIN_ARMY_SIZE": 12869559,                  # Only raid if army size exceeds this
+    "RAID_MIN_UNTRAINED_TROOPS": 50000,              # Only raid if untrained troops exceed this
 
     # == Miners & Farming ==
     "MINERS": 1000,
-    "MINER_BASE_RATE": 100,  # Spice/turn per miner
-    "FARM_OPTIMAL_MODE": True,
-    "FARM_OPTIMAL_TURN": 10,  # Adjustable; when miners peak
+    "MINER_BASE_RATE": 100,                          # Spice/turn per miner
+    "FARM_OPTIMAL_MODE": True,                       # If True, bot waits for optimal turn/miner count for farming
+    "FARM_OPTIMAL_TURN": 10,                         # On which turn to farm optimally
 
     # == Historical Analysis ==
     "CURRENT_TURN": 1,
+
+    # == Advanced Visualization ==
+    "ADVANCED_VISUALIZATION": {
+        "spice_per_turn": [],
+        "army_growth": [],
+        "defense_levels": [],
+        "upgrade_history": [],
+        "spy_success_rate": [],
+        "mining_efficiency": [],
+        "raid_success_rate": [],
+        "resource_spent_vs_gained": [],
+        "repair_efficiency": [],
+        "research_progress": [],
+        "top_spice_haul": [],
+        "enemy_defeated_count": [],
+        "troop_training_rate": [],
+        "untrained_troops_stats": [],
+        "custom_joke_stats": [],  # For when you want to visualize your jokes per day, bro!
+        # Add more custom stats or graph data here as needed
+    }
 }
+
+# Code Bros Joke:
+# Why do Code Bros have so many stats? 
+# Because the only thing we like tracking more than spice... is how hard we're flexing! 😎📊
