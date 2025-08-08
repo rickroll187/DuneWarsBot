@@ -1,83 +1,72 @@
 import streamlit as st
-from config import SETTINGS, log
+
 from modules import (
-    bank, combat, train, repair, upgrade, research, spy, anti_covert,
-    enemy_stats, battle_reports, custom_actions, resource_management,
-    enemy_watchlist, stats_graphs
+    bank,
+    combat,
+    train,
+    repair,
+    upgrade,
+    research,
+    spy,
+    anti_covert,
+    enemy_stats,
+    codebros_battlelogs,   # <-- updated import name!
+    custom_actions,
+    enemy_watchlist,
+    stats_graphs
 )
-import threading
-import time
-import logging
 
-DASH_LOG = []
+st.set_page_config(page_title="DuneWarsBot", layout="wide")
+st.title("💣 DuneWarsBot — Code Bros Edition")
 
-class StreamlitLogHandler(logging.Handler):
-    def emit(self, record):
-        msg = self.format(record)
-        DASH_LOG.append(msg)
-        if len(DASH_LOG) > SETTINGS["MAX_LOG_LINES"]:
-            DASH_LOG.pop(0)
+st.write("Welcome to DuneWarsBot! The Code Bros bring you the spiciest bot in the desert. More features coming soon!")
 
-log.handlers = []
-log.addHandler(StreamlitLogHandler())
+# Example placeholder sections for each module
+st.header("Bank")
+st.info(bank.get_bank_status() if hasattr(bank, "get_bank_status") else "Bank module loaded. Functionality coming soon!")
 
-st.title("Code Bros DuneWarsBot Monster Edition 💪😎")
+st.header("Combat")
+st.info(combat.get_combat_report() if hasattr(combat, "get_combat_report") else "Combat module loaded. Functionality coming soon!")
 
-st.sidebar.header("Code Bros Bot Controls")
+st.header("Train")
+st.info(train.train_units() if hasattr(train, "train_units") else "Train module loaded. Functionality coming soon!")
 
-# == Feature Toggles ==
-SETTINGS["AUTO_FARM"] = st.sidebar.toggle("Auto Farm", SETTINGS["AUTO_FARM"])
-SETTINGS["AUTO_RAID"] = st.sidebar.toggle("Auto Raid", SETTINGS["AUTO_RAID"])
-SETTINGS["AUTO_TRAIN"] = st.sidebar.toggle("Auto Train", SETTINGS["AUTO_TRAIN"])
-SETTINGS["AUTO_REPAIR"] = st.sidebar.toggle("Auto Repair Mothership", SETTINGS["AUTO_REPAIR"])
-SETTINGS["AUTO_UPGRADE"] = st.sidebar.toggle("Auto Upgrade", SETTINGS["AUTO_UPGRADE"])
-SETTINGS["AUTO_RESEARCH"] = st.sidebar.toggle("Auto Research", SETTINGS["AUTO_RESEARCH"])
-SETTINGS["AUTO_SPY"] = st.sidebar.toggle("Auto Spy Network", SETTINGS["AUTO_SPY"])
-SETTINGS["AUTO_ANTICOVERT"] = st.sidebar.toggle("Auto Anti-Covert Ops", SETTINGS["AUTO_ANTICOVERT"])
+st.header("Repair")
+st.info(repair.repair_units() if hasattr(repair, "repair_units") else "Repair module loaded. Functionality coming soon!")
 
-SETTINGS["REPAIR_AMOUNT"] = st.sidebar.slider("Repair Amount", 100, 5000, SETTINGS["REPAIR_AMOUNT"], step=100)
+st.header("Upgrade")
+st.info(upgrade.upgrade_units() if hasattr(upgrade, "upgrade_units") else "Upgrade module loaded. Functionality coming soon!")
 
-# == ALL IN Mode ==
-if st.sidebar.button("Go ALL IN Code Bros Mode"):
-    for key in SETTINGS:
-        if key.startswith("AUTO_"):
-            SETTINGS[key] = True
-    st.success("ALL IN mode activated! Every feature firing. 💪")
+st.header("Research")
+st.info(research.research_units() if hasattr(research, "research_units") else "Research module loaded. Functionality coming soon!")
 
-macro_actions = st.sidebar.text_input("Custom Macro (comma separated)", value="raid,spy,upgrade")
-macro_list = [a.strip() for a in macro_actions.split(",") if a.strip()]
-if st.sidebar.button("Run Macro"):
-    custom_actions.run_macro(macro_list)
+st.header("Spy Network")
+st.info(spy.spy_report() if hasattr(spy, "spy_report") else "Spy module loaded. Functionality coming soon!")
 
-def bot_loop():
-    while st.session_state["run_bot"]:
-        bank.run(None, SETTINGS.get("FARM_AMOUNT", 10000))
-        combat.run(None, SETTINGS.get("RAID_AMOUNT", 5000), SETTINGS.get("RAID_MAX_TARGETS", 3))
-        train.run(None, SETTINGS.get("TRAIN_AMOUNT", 20))
-        repair.run(None, SETTINGS.get("REPAIR_AMOUNT", 500))
-        upgrade.run(None, SETTINGS.get("UPGRADE_SPICE_THRESHOLD", 10000))
-        research.run(None)
-        spy.run(None, SETTINGS.get("SPY_COUNT", 5), SETTINGS.get("SPY_MISSION", "intel"))
-        anti_covert.run(None, SETTINGS.get("ANTICOVERT_SCAN_COUNT", 3), SETTINGS.get("ANTICOVERT_STRATEGY", "scan"))
-        enemy_stats.log_enemy_stats()
-        time.sleep(2)
+st.header("Anti-Covert Ops")
+st.info(anti_covert.scan_for_intruders() if hasattr(anti_covert, "scan_for_intruders") else "Anti-Covert module loaded. Functionality coming soon!")
 
-if "run_bot" not in st.session_state:
-    st.session_state["run_bot"] = False
-    st.session_state["bot_thread"] = None
+st.header("Enemy Stats")
+st.info(enemy_stats.get_stats() if hasattr(enemy_stats, "get_stats") else "Enemy stats module loaded. Functionality coming soon!")
 
-if st.button("Start Code Bros Bot", disabled=st.session_state["run_bot"]):
-    st.session_state["run_bot"] = True
-    st.session_state["bot_thread"] = threading.Thread(target=bot_loop, daemon=True)
-    st.session_state["bot_thread"].start()
-    st.success("Bot started! Watch it work below.")
+st.header("Battle Logs")
+st.info(codebros_battlelogs.get_battle_log() if hasattr(codebros_battlelogs, "get_battle_log") else "Battle logs module loaded. Functionality coming soon!")
 
-if st.button("Stop Bot", disabled=not st.session_state["run_bot"]):
-    st.session_state["run_bot"] = False
-    st.success("Bot stopped!")
+st.header("Custom Actions")
+st.info(custom_actions.get_actions() if hasattr(custom_actions, "get_actions") else "Custom actions module loaded. Functionality coming soon!")
 
-st.subheader("Bot Activity Log (Real Time)")
-for msg in DASH_LOG[-40:]:
-    st.write(msg)
+st.header("Resource Management")
+st.info(resource_management.get_resources() if hasattr(resource_management, "get_resources") else "Resource management module loaded. Functionality coming soon!")
 
-st.caption("Code Bros: Domination, one toggle at a time. Turn it off if you want scars, bro! 😎")
+st.header("Enemy Watchlist")
+st.info(enemy_watchlist.get_watchlist() if hasattr(enemy_watchlist, "get_watchlist") else "Enemy watchlist module loaded. Functionality coming soon!")
+
+st.header("Stats Graphs")
+st.info(stats_graphs.show_graphs() if hasattr(stats_graphs, "show_graphs") else "Stats graphs module loaded. Functionality coming soon!")
+
+st.markdown("---")
+st.caption("🦾 Code Bros: We code the spice, we crack the jokes. If you hit an error, drop it here and we'll roast it!")
+
+# Joke of the day:
+st.sidebar.title("Code Bros Joke")
+st.sidebar.markdown("> Why do Code Bros love Streamlit?\n> Because launching a bot should be as easy as flexing your biceps, bro! 😎")

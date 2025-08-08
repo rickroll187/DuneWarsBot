@@ -1,25 +1,39 @@
-from config import SETTINGS, log
+import datetime
 
-def log_battle_result(battle_type, opponent, outcome, loot=0, details=""):
-    report = {
-        "type": battle_type,
-        "opponent": opponent,
+_battle_log = []
+
+def log_battle(player, outcome, details=None):
+    """
+    Log a battle for a player.
+    Args:
+        player (str): The name or ID of the player involved.
+        outcome (str): The outcome of the battle ("win", "loss", etc.).
+        details (str, optional): Extra details about the battle.
+    Returns:
+        dict: The logged entry.
+    """
+    entry = {
+        "time": datetime.datetime.now().isoformat(),
+        "player": player,
         "outcome": outcome,
-        "loot": loot,
-        "details": details,
+        "details": details
     }
-    SETTINGS["BATTLE_HISTORY"].append(report)
-    log.info(f"[Battle Report] {battle_type} vs {opponent}: {outcome} | Loot: {loot} | {details}")
+    _battle_log.append(entry)
+    return entry
 
-def get_latest_reports(n=10):
-    return SETTINGS["BATTLE_HISTORY"][-n:]
+def get_battle_log():
+    """
+    Get the full battle log.
+    Returns:
+        list: All battles logged.
+    """
+    return list(_battle_log)
 
-def log_spy_report(target, outcome, details=""):
-    report = {
-        "type": "spy",
-        "target": target,
-        "outcome": outcome,
-        "details": details,
-    }
-    SETTINGS["BATTLE_HISTORY"].append(report)
-    log.info(f"[Spy Report] Target: {target} | Outcome: {outcome} | {details}")
+def clear_battle_log():
+    """
+    Clear all battle logs.
+    """
+    _battle_log.clear()
+
+# 🦾 Code Bros Joke:
+# Why did the battle log take a nap? Because it was tired of tracking all those epic wins, bro! 😎
