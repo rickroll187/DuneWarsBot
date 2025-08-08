@@ -12,7 +12,6 @@ from modules import (
     enemy_stats,
     codebros_battlelogs,   # <-- updated import name!
     custom_actions,
-    resource_management,
     enemy_watchlist,
     stats_graphs
 )
