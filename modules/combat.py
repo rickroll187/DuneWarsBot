@@ -1,34 +1,28 @@
-"""
-Combat & Raiding - Code Bros
-Smart target selection, blacklist, and spicy raid execution!
-"""
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import random
 import time
-from config import ENABLE_RAID, RAID_MAX_TARGETS, RAID_BLACKLIST_DURATION, log
-from modules.anti_detection import should_skip_action
+from config import SETTINGS, log
+from modules.anti_detection import should_skip_action, random_delay
 
-# In-memory session blacklist
 target_blacklist = {}
 
-def fetch_targets(session):
-    # TODO: Replace with actual target scraping
-    log("Fetching raid targets (placeholder)...")
+def fetch_targets():
+    # Simulate fetching targets
     return [
         {'id': '123', 'army': 300, 'spice': 5000},
         {'id': '456', 'army': 500, 'spice': 7000},
         {'id': '789', 'army': 200, 'spice': 2000}
     ]
 
-def raid_target(session, target):
-    # TODO: Replace with actual raid POST request
-    log(f"Raiding target {target['id']} with {target['spice']} spice.")
+def raid_target(target, raid_amount):
+    log.info(f"Raiding target {target['id']} for {raid_amount} spice")
     success = random.random() > 0.25
+    time.sleep(random.uniform(0.5, 1.5))
+    random_delay()
     if not success:
-        log(f"Raid on {target['id']} failed! Adding to blacklist.")
-        target_blacklist[target['id']] = RAID_BLACKLIST_DURATION
+        log.info(f"Raid on {target['id']} failed! Blacklisted.")
+        target_blacklist[target['id']] = SETTINGS["RAID_BLACKLIST_DURATION"]
+    else:
+        log.info(f"Raid on {target['id']} successful!")
     return success
 
 def update_blacklist():
@@ -37,19 +31,14 @@ def update_blacklist():
         if target_blacklist[t] <= 0:
             del target_blacklist[t]
 
-def run(session):
-    if not ENABLE_RAID:
-        log("Raiding disabled in config.")
+def run(session, raid_amount, max_targets):
+    if not SETTINGS["AUTO_RAID"]:
+        log.info("Raiding skipped (AUTO_RAID off)")
         return
-    log("Starting raid sequence!")
     update_blacklist()
-    targets = fetch_targets(session)
-    targets = [t for t in sorted(targets, key=lambda x: -x['spice']) if t['id'] not in target_blacklist]
-    targets = targets[:RAID_MAX_TARGETS]
-    for target in targets:
+    targets = [t for t in fetch_targets() if t['id'] not in target_blacklist]
+    for target in targets[:max_targets]:
         if should_skip_action():
-            log(f"Skipped raiding {target['id']} to look more human.")
+            log.info(f"Skipped raiding {target['id']} (anti-detection)")
             continue
-        raid_target(session, target)
-        time.sleep(random.uniform(2, 4))  # Extra realism
-    log("Raid sequence finished.")
+        raid_target(target, raid_amount)
