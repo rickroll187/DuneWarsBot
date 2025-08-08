@@ -1,80 +1,71 @@
+import streamlit as st
+from config import SETTINGS, log
+from modules import bank, combat, train, repair, upgrade, research, spy, anti_covert
 import threading
-from selenium import webdriver
+import time
 
-# Import your modules
-from modules.combat import run as raid_run
-from modules.bank import run as bank_run
-from modules.repair import run as repair_run
-from modules.train import run as train_run
-from modules.upgrade import run as upgrade_run
-from modules.research import run as research_run
-from modules.mothership import run as mothership_run
+DASH_LOG = []
 
-st.set_page_config(page_title="Code Bros DuneWarsBot Dashboard", layout="wide")
+class StreamlitLogHandler(logging.Handler):
+    def emit(self, record):
+        msg = self.format(record)
+        DASH_LOG.append(msg)
+        if len(DASH_LOG) > SETTINGS["MAX_LOG_LINES"]:
+            DASH_LOG.pop(0)
 
-st.title("🦾 Code Bros DuneWarsBot: Ultimate Control Panel")
+log.handlers = []
+log.addHandler(StreamlitLogHandler())
 
-# --- Selenium Driver Setup (BRO WARNING: configure as needed) ---
-@st.cache_resource(show_spinner=False)
-def get_driver():
-    try:
-        driver = webdriver.Firefox()  # Change to webdriver.Chrome() if you use Chrome
-        return driver
-    except Exception as e:
-        st.error(f"Failed to launch Selenium driver: {e}")
-        return None
+st.title("Code Bros DuneWarsBot Monster Edition 💪😎")
 
-driver = get_driver()
+st.sidebar.header("Code Bros Bot Controls")
+SETTINGS["AUTO_FARM"] = st.sidebar.toggle("Auto Farm", SETTINGS["AUTO_FARM"])
+SETTINGS["FARM_AMOUNT"] = st.sidebar.slider("Farm Amount", 1000, 50000, SETTINGS["FARM_AMOUNT"], step=1000)
+SETTINGS["AUTO_RAID"] = st.sidebar.toggle("Auto Raid", SETTINGS["AUTO_RAID"])
+SETTINGS["RAID_AMOUNT"] = st.sidebar.slider("Raid Amount", 1000, 50000, SETTINGS["RAID_AMOUNT"], step=1000)
+SETTINGS["RAID_MAX_TARGETS"] = st.sidebar.slider("Max Raid Targets", 1, 10, SETTINGS["RAID_MAX_TARGETS"])
+SETTINGS["AUTO_TRAIN"] = st.sidebar.toggle("Auto Train", SETTINGS["AUTO_TRAIN"])
+SETTINGS["TRAIN_AMOUNT"] = st.sidebar.slider("Train Amount", 1, 100, SETTINGS["TRAIN_AMOUNT"])
+SETTINGS["AUTO_REPAIR"] = st.sidebar.toggle("Auto Repair", SETTINGS["AUTO_REPAIR"])
+SETTINGS["REPAIR_AMOUNT"] = st.sidebar.slider("Repair Amount", 100, 5000, SETTINGS["REPAIR_AMOUNT"], step=100)
+SETTINGS["AUTO_UPGRADE"] = st.sidebar.toggle("Auto Upgrade", SETTINGS["AUTO_UPGRADE"])
+SETTINGS["UPGRADE_SPICE_THRESHOLD"] = st.sidebar.slider("Upgrade Spice Threshold", 1000, 50000, SETTINGS["UPGRADE_SPICE_THRESHOLD"], step=1000)
+SETTINGS["AUTO_RESEARCH"] = st.sidebar.toggle("Auto Research", SETTINGS["AUTO_RESEARCH"])
+SETTINGS["AUTO_SPY"] = st.sidebar.toggle("Auto Spy Network", SETTINGS["AUTO_SPY"])
+SETTINGS["SPY_COUNT"] = st.sidebar.slider("Number of Spies", 1, 20, SETTINGS["SPY_COUNT"])
+SETTINGS["SPY_MISSION"] = st.sidebar.selectbox("Spy Mission", ["scout", "sabotage", "intel"], index=["scout", "sabotage", "intel"].index(SETTINGS["SPY_MISSION"]))
+SETTINGS["AUTO_ANTICOVERT"] = st.sidebar.toggle("Auto Anti-Covert Ops", SETTINGS["AUTO_ANTICOVERT"])
+SETTINGS["ANTICOVERT_SCAN_COUNT"] = st.sidebar.slider("Anti-Covert Scan Count", 1, 10, SETTINGS["ANTICOVERT_SCAN_COUNT"])
+SETTINGS["ANTICOVERT_STRATEGY"] = st.sidebar.selectbox("Anti-Covert Strategy", ["scan", "trap", "counter-intel"], index=["scan", "trap", "counter-intel"].index(SETTINGS["ANTICOVERT_STRATEGY"]))
 
-# --- Bro logging (thread-safe) ---
-log_container = st.container()
-log_cache = []
+def bot_loop():
+    while st.session_state["run_bot"]:
+        bank.run(None, SETTINGS["FARM_AMOUNT"])
+        combat.run(None, SETTINGS["RAID_AMOUNT"], SETTINGS["RAID_MAX_TARGETS"])
+        train.run(None, SETTINGS["TRAIN_AMOUNT"])
+        repair.run(None, SETTINGS["REPAIR_AMOUNT"])
+        upgrade.run(None, SETTINGS["UPGRADE_SPICE_THRESHOLD"])
+        research.run(None)
+        spy.run(None, SETTINGS["SPY_COUNT"], SETTINGS["SPY_MISSION"])
+        anti_covert.run(None, SETTINGS["ANTICOVERT_SCAN_COUNT"], SETTINGS["ANTICOVERT_STRATEGY"])
+        time.sleep(2)
 
-def bro_log(msg):
-    log_cache.append(msg)
-    with log_container:
-        st.write(msg)
+if "run_bot" not in st.session_state:
+    st.session_state["run_bot"] = False
+    st.session_state["bot_thread"] = None
 
-# --- Threaded runner ---
-def threaded_run(func, *args):
-    def wrapper():
-        bro_log(f"Running {func.__name__}...")
-        try:
-            func(*args)
-            bro_log(f"{func.__name__} completed!")
-        except Exception as e:
-            bro_log(f"Error in {func.__name__}: {e}")
-    threading.Thread(target=wrapper).start()
+if st.button("Start Code Bros Bot", disabled=st.session_state["run_bot"]):
+    st.session_state["run_bot"] = True
+    st.session_state["bot_thread"] = threading.Thread(target=bot_loop, daemon=True)
+    st.session_state["bot_thread"].start()
+    st.success("Bot started! Watch it work below.")
 
-# --- UI Controls ---
-st.subheader("Choose your action, bro:")
-col1, col2, col3 = st.columns(3)
+if st.button("Stop Bot", disabled=not st.session_state["run_bot"]):
+    st.session_state["run_bot"] = False
+    st.success("Bot stopped!")
 
-with col1:
-    if st.button("🔥 Attack/Raid"):
-        threaded_run(raid_run, driver)
-    if st.button("🏦 Bank Spice"):
-        threaded_run(bank_run, driver)
-    if st.button("🛠️ Repair Troops"):
-        threaded_run(repair_run, driver)
+st.subheader("Bot Activity Log (Real Time)")
+for msg in DASH_LOG[-40:]:
+    st.write(msg)
 
-with col2:
-    if st.button("💪 Train Troops"):
-        threaded_run(train_run, driver)
-    if st.button("⬆️ Upgrade Stuff"):
-        threaded_run(upgrade_run, driver)
-    if st.button("🧪 Research"):
-        threaded_run(research_run, driver)
-
-with col3:
-    if st.button("🚀 Mothership Upkeep"):
-        threaded_run(mothership_run, driver)
-
-st.divider()
-st.subheader("📜 Bot Logs")
-for line in log_cache[-30:]:
-    st.write(line)
-
-st.info("Code Bros tip: Smash those buttons, level up, and let the spice flow! 😎")
-
-# Bro Code: Add more features as you wish!
+st.caption("Code Bros: The dashboard so cool, even enemy spies want to watch.")
