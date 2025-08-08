@@ -1,1 +1,1 @@
-# This file makes 'modules' a Python package for reliable imports.
+# Makes 'modules' a Python package for monster imports!
