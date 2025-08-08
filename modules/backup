@@ -1,0 +1,17 @@
+from config import SETTINGS, log
+import json
+import os
+
+def backup_settings(path="backup_settings.json"):
+    with open(path, "w") as f:
+        json.dump(SETTINGS, f, indent=2)
+    log.info(f"[Backup] Settings backed up to {path}")
+
+def restore_settings(path="backup_settings.json"):
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            restored = json.load(f)
+        SETTINGS.update(restored)
+        log.info(f"[Backup] Settings restored from {path}")
+    else:
+        log.info(f"[Backup] No backup found at {path}")
