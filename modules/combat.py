@@ -6,7 +6,6 @@ from modules.anti_detection import should_skip_action, random_delay
 target_blacklist = {}
 
 def fetch_targets():
-    # Simulate fetching targets
     return [
         {'id': '123', 'army': 300, 'spice': 5000},
         {'id': '456', 'army': 500, 'spice': 7000},
