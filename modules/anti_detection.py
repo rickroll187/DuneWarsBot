@@ -1,21 +1,25 @@
 """
-Anti-Detection & Humanization - Code Bros
-Because getting banned is not part of the plan.
+Anti-Detection - Code Bros
+Makes your bot blend in like it's one of the crowd.
 """
 import random
-import time
 from config import RANDOM_ACTION_ORDER, ACTION_DELAY_RANGE, SKIP_ACTION_PROBABILITY, log
 
-def randomize_action_order(actions):
-    if RANDOM_ACTION_ORDER:
-        random.shuffle(actions)
-        log("Action order randomized for extra stealth.")
-    return actions
-
-def maybe_delay():
-    delay = random.uniform(*ACTION_DELAY_RANGE)
-    log(f"Sleeping {delay:.2f} seconds to keep it spicy and human.")
-    time.sleep(delay)
-
 def should_skip_action():
-    return random.random() < SKIP_ACTION_PROBABILITY
+    """
+    Randomly skip actions to look human.
+    """
+    skip = random.random() < SKIP_ACTION_PROBABILITY
+    if skip:
+        log("Should skip action? Yes (bot acting human).")
+    else:
+        log("Should skip action? Nah (bot flexing).")
+    return skip
+
+def random_delay():
+    """
+    Sleep for a random time to avoid bot detection.
+    """
+    delay = random.uniform(*ACTION_DELAY_RANGE)
+    log(f"Sleeping for {delay:.2f}s to blend in.")
+    time.sleep(delay)
